@@ -21,8 +21,9 @@ export default function Home() {
     const randomVideo = videos[Math.floor(Math.random() * videos.length)];
     setSelectedVideo(randomVideo);
 
-    // 初始化音频
-    audioRef.current = new Audio('/adhdmusic.m4a');
+    // 初始化音频，但不立即加载
+    audioRef.current = new Audio();
+    audioRef.current.preload = 'metadata'; // 只预加载元数据
     audioRef.current.loop = true;
 
     // 组件卸载时清理
@@ -63,6 +64,10 @@ export default function Home() {
       setRemainingSeconds(minutes * 60);
       setIsRunning(true);
       if (audioRef.current) {
+        // 只有在需要播放时才设置音频源
+        if (!audioRef.current.src) {
+          audioRef.current.src = '/adhdmusic.m4a';
+        }
         audioRef.current.play().catch(error => {
           console.log('音乐播放失败:', error);
         });
