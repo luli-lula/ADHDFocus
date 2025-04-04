@@ -66,7 +66,7 @@ export default function Home() {
       if (audioRef.current) {
         // 只有在需要播放时才设置音频源
         if (!audioRef.current.src) {
-          audioRef.current.src = '/adhdmusic.m4a';
+          audioRef.current.src = '/background.mp3';
         }
         audioRef.current.play().catch(error => {
           console.log('音乐播放失败:', error);
