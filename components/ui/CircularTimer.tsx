@@ -35,9 +35,9 @@ export function CircularTimer({ onChange, onPreviewChange, currentSeconds }: Cir
     if (angle < 0) angle += 2 * Math.PI;
     
     // 转换为分钟（0-59）
-    let newMinutes = Math.round((angle / (2 * Math.PI)) * 60) % 60;
+    const newMinutes = Math.round((angle / (2 * Math.PI)) * 60) % 60;
     return newMinutes;
-  }, []);
+  }, [center]);
 
   // 格式化坐标值，确保服务器端和客户端渲染一致
   const formatCoord = (num: number) => Number(num.toFixed(2));
@@ -82,7 +82,7 @@ export function CircularTimer({ onChange, onPreviewChange, currentSeconds }: Cir
     onPreviewChange?.(null);
   };
 
-  const handleClick = (e: React.MouseEvent) => {
+  const handleClick = () => {
     if (previewMinutes !== null) {
       setMinutes(previewMinutes);
       onChange?.(previewMinutes);
