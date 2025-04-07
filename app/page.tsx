@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from 'react';
 import { CircularTimer } from '@/components/ui/CircularTimer';
 
 // 背景视频列表
-const videos = ['/forestvideosmall.mp4', '/forest2_small.mp4', '/forest3_small.mp4'];
+const videos = ['/forestvideosmall.mp4', '/forest2_small.mp4', '/forest3.mp4'];
 
 export default function Home() {
   // 状态管理
