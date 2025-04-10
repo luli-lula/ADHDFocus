@@ -4,11 +4,22 @@ interface CircularTimerProps {
   onChange?: (minutes: number) => void;
   onPreviewChange?: (minutes: number | null) => void;
   currentSeconds?: number | null; // 当前剩余秒数
+  isRunning?: boolean; // 是否正在运行
+  isPaused?: boolean; // 是否暂停
+  onPause?: () => void; // 暂停回调
 }
 
-export function CircularTimer({ onChange, onPreviewChange, currentSeconds }: CircularTimerProps) {
+export function CircularTimer({ 
+  onChange, 
+  onPreviewChange, 
+  currentSeconds,
+  isRunning,
+  isPaused,
+  onPause 
+}: CircularTimerProps) {
   const [minutes, setMinutes] = useState(0);
   const [previewMinutes, setPreviewMinutes] = useState<number | null>(null);
+  const [isInnerHovered, setIsInnerHovered] = useState(false);
 
   // SVG 参数
   const size = 300; // 调整大小更合适
@@ -69,21 +80,52 @@ export function CircularTimer({ onChange, onPreviewChange, currentSeconds }: Cir
     return baseTickLength;
   };
 
+  // 检查点是否在圆内
+  const isPointInCircle = (x: number, y: number, element: HTMLElement) => {
+    const rect = element.getBoundingClientRect();
+    const svgSize = Math.min(rect.width, rect.height);
+    const svgScale = svgSize / size;
+    
+    // 计算鼠标相对于SVG中心的位置
+    const relativeX = (x - rect.left - (rect.width / 2)) / svgScale;
+    const relativeY = (y - rect.top - (rect.height / 2)) / svgScale;
+    
+    // 计算到中心的距离
+    const distance = Math.sqrt(relativeX * relativeX + relativeY * relativeY);
+    
+    // 使用稍大一点的判断范围，确保整个圆内都能检测到
+    return distance <= radius + strokeWidth;
+  };
+
   // 鼠标事件处理
   const handleMouseMove = (e: React.MouseEvent) => {
     const element = e.currentTarget as HTMLElement;
-    const newMinutes = calculateMinutes(e.clientX, e.clientY, element);
-    setPreviewMinutes(newMinutes);
-    onPreviewChange?.(newMinutes);
+    const isInCircle = isPointInCircle(e.clientX, e.clientY, element);
+    setIsInnerHovered(isInCircle);
+
+    if (!isInCircle) {
+      const newMinutes = calculateMinutes(e.clientX, e.clientY, element);
+      setPreviewMinutes(newMinutes);
+      onPreviewChange?.(newMinutes);
+    } else {
+      setPreviewMinutes(null);
+      onPreviewChange?.(null);
+    }
   };
 
   const handleMouseLeave = () => {
     setPreviewMinutes(null);
     onPreviewChange?.(null);
+    setIsInnerHovered(false);
   };
 
-  const handleClick = () => {
-    if (previewMinutes !== null) {
+  const handleClick = (e: React.MouseEvent) => {
+    const element = e.currentTarget as HTMLElement;
+    const isInCircle = isPointInCircle(e.clientX, e.clientY, element);
+
+    if (isInCircle && isRunning) {
+      onPause?.();
+    } else if (!isInCircle && previewMinutes !== null) {
       setMinutes(previewMinutes);
       onChange?.(previewMinutes);
     }
@@ -94,10 +136,11 @@ export function CircularTimer({ onChange, onPreviewChange, currentSeconds }: Cir
     // 调整角度计算，使12点为起点
     const angle = ((i * 2 * Math.PI) / segments) - (Math.PI / 2);
     const isHighlighted = i <= currentProgress;
-    const isPreview = previewMinutes !== null && i <= previewMinutes;
+    const isPreview = !isInnerHovered && previewMinutes !== null && i <= previewMinutes;
     
     // 计算刻度线长度（带波浪效果）
-    const tickLength = calculateWaveLength(i, previewMinutes);
+    const tickLength = !isInnerHovered ? calculateWaveLength(i, previewMinutes) : 
+      (i % 5 === 0 ? 20 : 15); // 在内圈悬停时使用固定长度
     
     // 从圆环开始向外延伸
     const x1 = formatCoord(center + radius * Math.cos(angle));
@@ -144,6 +187,54 @@ export function CircularTimer({ onChange, onPreviewChange, currentSeconds }: Cir
         
         {/* 刻度线 */}
         {ticks}
+
+        {/* 暂停/继续按钮 */}
+        {isRunning && (isPaused || isInnerHovered) && (
+          <g style={{ isolation: 'isolate' }}>
+            {/* 半透明背景圆 */}
+            <circle
+              cx={center}
+              cy={center}
+              r={radius - 10}
+              fill="white"
+              fillOpacity={isPaused ? 0.15 : 0.1}
+              style={{ mixBlendMode: 'overlay' }}
+            />
+            {/* 暂停/继续图标 */}
+            <g>
+              {isPaused ? (
+                // 播放图标（三角形）
+                <path
+                  d={`M${center - 10},${center - 20} L${center - 10},${center + 20} L${center + 20},${center} Z`}
+                  fill="white"
+                  fillOpacity={0.8}
+                />
+              ) : (
+                // 暂停图标（两个矩形）
+                <>
+                  <rect
+                    x={center - 15}
+                    y={center - 25}
+                    width={10}
+                    height={50}
+                    fill="white"
+                    fillOpacity={0.8}
+                    rx={2}
+                  />
+                  <rect
+                    x={center + 5}
+                    y={center - 25}
+                    width={10}
+                    height={50}
+                    fill="white"
+                    fillOpacity={0.8}
+                    rx={2}
+                  />
+                </>
+              )}
+            </g>
+          </g>
+        )}
       </svg>
     </div>
   );

@@ -13,6 +13,7 @@ export default function Home() {
   const [previewMinutes, setPreviewMinutes] = useState<number | null>(null); // 预览的分钟数
   const [remainingSeconds, setRemainingSeconds] = useState<number | null>(null); // 剩余秒数
   const [isRunning, setIsRunning] = useState(false); // 倒计时是否在运行
+  const [isPaused, setIsPaused] = useState(false); // 是否暂停
   const audioRef = useRef<HTMLAudioElement | null>(null); // 音频引用
 
   // 初始化效果
@@ -38,7 +39,7 @@ export default function Home() {
   useEffect(() => {
     let timer: NodeJS.Timeout;
 
-    if (isRunning && remainingSeconds !== null && remainingSeconds > 0) {
+    if (isRunning && !isPaused && remainingSeconds !== null && remainingSeconds > 0) {
       timer = setInterval(() => {
         setRemainingSeconds(prev => {
           if (prev === null || prev <= 1) {
@@ -55,7 +56,7 @@ export default function Home() {
     }
 
     return () => clearInterval(timer);
-  }, [isRunning, remainingSeconds]);
+  }, [isRunning, remainingSeconds, isPaused]);
 
   // 处理时间变化
   const handleTimeChange = (minutes: number) => {
@@ -80,8 +81,30 @@ export default function Home() {
     setPreviewMinutes(minutes);
   };
 
+  // 处理暂停/继续
+  const handlePause = () => {
+    if (isPaused) {
+      // 继续
+      setIsPaused(false);
+      if (audioRef.current) {
+        audioRef.current.play().catch(error => {
+          console.log('音乐播放失败:', error);
+        });
+      }
+    } else {
+      // 暂停
+      setIsPaused(true);
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
+    }
+  };
+
   // 格式化显示时间
   const formatTime = () => {
+    if (remainingSeconds === 0) {
+      return 0;
+    }
     if (isRunning && remainingSeconds !== null) {
       return Math.ceil(remainingSeconds / 60);
     }
@@ -121,16 +144,19 @@ export default function Home() {
       </div>
 
       {/* 环形计时器 */}
-      <div className="z-20 relative">
+      <div className="z-30 relative">
         <CircularTimer 
           onChange={handleTimeChange}
           onPreviewChange={handlePreviewChange}
           currentSeconds={remainingSeconds}
+          isRunning={isRunning}
+          isPaused={isPaused}
+          onPause={handlePause}
         />
       </div>
 
       {/* 时间显示 */}
-      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
+      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none">
         <span 
           style={{color: 'rgb(74 222 128 / 60%)'}} 
           className="!text-green-400/85 text-[120px] font-bold [text-shadow:_0_1px_0_rgb(0_0_0_/_40%),_0_2px_10px_rgb(0_0_0_/_20%)]"

@@ -1,36 +1,43 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ADHD Focus - Concentration Timer
 
-## Getting Started
+![Timer Preview](public/preview.png)
 
-First, run the development server:
+## 🌟 [Click to Use](https://www.adhd-focus.ailula.top/)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+This is a simple concentration timer website designed to help people with ADHD (Attention Deficit Hyperactivity Disorder) better focus. The project was inspired by my personal experience — discovering that ADHD focus music genuinely helps me calm down and maintain concentration.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Features
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- 🎯 Clean circular timer interface
+- 🌲 Calming forest background videos
+- ⏸️ Pause/Resume functionality
+- 🎨 Elegant visual feedback
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## How to Use
 
-## Learn More
+1. Move your mouse to the outer ring of the timer to set time
+2. Click the outer ring to start the timer
+3. Move your mouse to the inner circle to pause/resume
+4. Background music will automatically stop when time is up
 
-To learn more about Next.js, take a look at the following resources:
+## Tech Stack
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Next.js 14
+- React
+- TypeScript
+- Tailwind CSS
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Contributing
 
-## Deploy on Vercel
+If you have any suggestions or ideas, feel free to:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Submit an Issue
+2. Create a Pull Request
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Acknowledgments
+
+The background music used in this project is from [Study with Me: Cozy Cabin](https://www.youtube.com/watch?v=RG2IK8oRZNA). This is for personal learning purposes only. If there are any copyright concerns, please contact me through GitHub Issues.
+
+## License
+
+MIT
