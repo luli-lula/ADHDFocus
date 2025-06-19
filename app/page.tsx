@@ -14,6 +14,7 @@ export default function Home() {
   const [remainingSeconds, setRemainingSeconds] = useState<number | null>(null); // 剩余秒数
   const [isRunning, setIsRunning] = useState(false); // 倒计时是否在运行
   const [isPaused, setIsPaused] = useState(false); // 是否暂停
+
   const audioRef = useRef<HTMLAudioElement | null>(null); // 音频引用
 
   // 初始化效果
@@ -79,6 +80,14 @@ export default function Home() {
   // 处理预览时间变化
   const handlePreviewChange = (minutes: number | null) => {
     setPreviewMinutes(minutes);
+    // 追踪用户预览行为
+    if (minutes && window.gtag) {
+      window.gtag('event', 'timer_preview', {
+        event_category: 'engagement',
+        event_label: 'time_selection',
+        value: minutes
+      });
+    }
   };
 
   // 处理暂停/继续
@@ -91,11 +100,25 @@ export default function Home() {
           console.log('音乐播放失败:', error);
         });
       }
+      // 追踪继续事件
+      if (window.gtag) {
+        window.gtag('event', 'timer_resume', {
+          event_category: 'engagement',
+          event_label: 'user_interaction'
+        });
+      }
     } else {
       // 暂停
       setIsPaused(true);
       if (audioRef.current) {
         audioRef.current.pause();
+      }
+      // 追踪暂停事件
+      if (window.gtag) {
+        window.gtag('event', 'timer_pause', {
+          event_category: 'engagement',
+          event_label: 'user_interaction'
+        });
       }
     }
   };
@@ -142,6 +165,8 @@ export default function Home() {
           </video>
         )}
       </div>
+
+
 
       {/* 环形计时器 */}
       <div className="z-30 relative">
