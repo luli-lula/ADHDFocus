@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react';
 import { CircularTimer } from '@/components/ui/CircularTimer';
+import { InterstitialJournal } from '@/components/ui/InterstitialJournal';
 
 // 背景视频列表
 const videos = ['/forestvideosmall.mp4', '/forest2_small.mp4', '/forest3.mp4'];
@@ -135,7 +136,7 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen w-full relative overflow-hidden flex items-center justify-center text-white">
+    <main className="min-h-screen w-full relative overflow-hidden text-white">
       {/* 视频容器样式 */}
       <style jsx global>{`
         .video-container {
@@ -168,26 +169,34 @@ export default function Home() {
 
 
 
-      {/* 环形计时器 */}
-      <div className="z-30 relative">
-        <CircularTimer 
-          onChange={handleTimeChange}
-          onPreviewChange={handlePreviewChange}
-          currentSeconds={remainingSeconds}
-          isRunning={isRunning}
-          isPaused={isPaused}
-          onPause={handlePause}
-        />
+      {/* 中间内容区域 - 占据全屏 */}
+      <div className="absolute inset-0 flex items-center justify-center">
+        {/* 环形计时器 */}
+        <div className="z-30 relative">
+          <CircularTimer 
+            onChange={handleTimeChange}
+            onPreviewChange={handlePreviewChange}
+            currentSeconds={remainingSeconds}
+            isRunning={isRunning}
+            isPaused={isPaused}
+            onPause={handlePause}
+          />
+        </div>
+
+        {/* 时间显示 */}
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none">
+          <span 
+            style={{color: 'rgb(74 222 128 / 60%)'}} 
+            className="!text-green-400/85 text-[120px] font-bold [text-shadow:_0_1px_0_rgb(0_0_0_/_40%),_0_2px_10px_rgb(0_0_0_/_20%)]"
+          >
+            {formatTime()}
+          </span>
+        </div>
       </div>
 
-      {/* 时间显示 */}
-      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none">
-        <span 
-          style={{color: 'rgb(74 222 128 / 60%)'}} 
-          className="!text-green-400/85 text-[120px] font-bold [text-shadow:_0_1px_0_rgb(0_0_0_/_40%),_0_2px_10px_rgb(0_0_0_/_20%)]"
-        >
-          {formatTime()}
-        </span>
+      {/* 右侧日记面板 - 吸附右边缘 */}
+      <div className="fixed right-0 top-0 z-40 h-screen">
+        <InterstitialJournal />
       </div>
     </main>
   );
